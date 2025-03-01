@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AK Shala Internship</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('static/back.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            transition: background 0.5s ease-in-out;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+            border-radius: 10px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .hidden {
+            display: none;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: transparent;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100px;
+            padding: 10px;
+            background: #4facfe;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background: #00c6fb;
+            transform: scale(1.05);
+        }
+        .navbar {
+            display: none;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .navbar a:hover {
+            background: #4facfe;
+            border-radius: 5px;
+        }
+        .matches-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 200px;
+            width: 100%;
+       
+            background-size: 1000px;
+            background-attachment: fixed;
+            height: 700px;
+        }
+        .match {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px;
+            width: 500px;
+            text-align: center;
+            justify-content: space-between;
+            animation: slideIn 0.5s ease-in-out;
+        }
+        .match img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    object-fit: cover;
+    display:flex;
+    margin-left: 65px;
+
+    
+}
+
+.seat-button {
+    width: 100%;
+    padding: 10px;
+    background: #4facfe;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.seat-button:hover {
+    background: #00c6fb;
+    transform: scale(1.05);
+}
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container" id="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="text" id="login-name" placeholder="Name" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>New user? <a href="#" id="show-register">Click here to sign up</a></p>
+        <p id="login-message" style="color: red;"></p>
+    </div>
+
+    <div class="container hidden" id="register-container">
+        <h2>Register</h2>
+        <form id="register-form">
+            <input type="text" id="register-name" placeholder="Name" required>
+            <input type="password" id="register-password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already registered? <a href="#" id="show-login">Go to Login</a></p>
+    </div>
+
+    <div class="navbar" id="navbar">
+        <a href="#" id="show-matches">Matches</a>
+    </div>
+
+    <div class="matches-container" id="matches-section">
+        <h1 style="background-color: white;">IPL 2025 Match Schedule</h1>
+        <div id="matches-list"></div>
+    </div>
+
+    
+    <div class="container hidden" id="booking-container">
+        <h2>Book Ticket</h2>
+        <form id="booking-form">
+            <input type="text" id="booking-name" placeholder="Your Name" required>
+            <input type="text" id="booking-match-date" placeholder="Match Date" readonly>
+            <input type="text" id="booking-match-time" placeholder="Match Time" readonly>
+            <input type="text" id="booking-match-teams" placeholder="Match Teams" readonly>
+            <input type="text" id="booking-match-venue" placeholder="Match Venue" readonly>
+            
+            <!-- Seating Option Buttons -->
+            <div>
+                <button type="button" class="seat-button" id="front-seat" value="800">Front - ₹800</button>
+                <button type="button" class="seat-button" id="middle-seat" value="500">Middle - ₹500</button>
+                <button type="button" class="seat-button" id="last-seat" value="300">Last - ₹300</button>
+            </div>
+            
+            <p id="seat-price" style="font-weight: bold;"></p>
+            
+            <!-- QR Code Section -->
+            <div id="qr-code-section" style="display: none;">
+                <img id="qr-code" src="static/pay.jpg" alt="QR Code" style="width: 300px; height: 300px;">
+            </div>
+            
+            <button type="button" id="confirm-booking" style="width: 300px;">Confirm Now</button>
+        </form>
+        <p id="booking-message" style="color: green;"></p>
+        <button id="back-to-matches" style="width: 200px;">Back to Matches</button>
+    </div>
+    
+
+    <div id="ticket-display" style="display: none;">
+        <h3>Your Ticket</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th>Name</th>
+                <th>Match</th>
+                <th>Venue</th>
+                <th>Price</th>
+            </tr>
+            <tr id="ticket-details-row">
+                <td id="ticket-name"></td>
+                <td id="ticket-match"></td>
+                <td id="ticket-venue"></td>
+                <td id="ticket-price"></td>
+            </tr>
+        </table>
+        <button id="download-ticket" style="margin-top: 10px;">Download Ticket</button>
+    </div>
+    <script>
+        
+       
+        const matches = [
+    { date: 'MAR, SAT 22', time: '7:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Kolkata' },
+    { date: 'MAR, SUN 23', time: '3:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Hyderabad' },
+    { date: 'MAR, SUN 23', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Chennai' },
+    { date: 'MAR, MON 24', time: '7:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Vishakhapatnam' },
+    { date: 'MAR, TUE 25', time: '7:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Ahmedabad' },
+    { date: 'MAR, WED 26', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Guwahati' },
+    { date: 'MAR, THU 27', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Hyderabad' },
+    { date: 'MAR, FRI 28', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Chennai' },
+    { date: 'MAR, SAT 29', time: '7:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Ahmedabad' },
+    { date: 'MAR, SUN 30', time: '3:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Vishakapatnam' },
+    { date: 'MAR, SUN 30', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Guwahati' },
+    { date: 'APR, MON 31', time: '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Mumbai' },
+    { date: 'MAY, TUE 1', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Lacknow' },
+    { date: 'APR, WED 2', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Bengaluru' },
+    { date: 'APR, THU 3', time: '7:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Kolkata' },
+    { date: 'APR, FRI 4', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Lucknow' },
+    { date: 'APR, SAT 5', time: '3:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Chennai' },
+    { date: 'APR, SAT 5', time: '7:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'New chadigarh' },
+    { date: 'APR, SUN 6', time: '3:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Kolkata' },
+    { date: 'APR, SUN 6', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Hydarabad' },
+    { date: 'APR, MON 7', time: '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Mumbai' },
+    { date: 'APR, TUE 8', time: '7:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'New chandigarh' },
+    { date: 'APR, WEB 9', time: '7:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Ahmedabad' },
+    { date: 'APR, THU 10', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Bengaluru' },
+    { date: 'APR, FRI 11', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Chennai' },
+    { date: 'APR, SAT 12', time: '3:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Lucknow' },
+    { date: 'APR, SAT 12', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Hydarabad' },
+    { date: 'APR, SUN 13', time: '3:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Jaipur' },
+    { date: 'APR, SUN 13', time: '7:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Delhi' },
+    { date: 'APR, MON 14', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Lucknow' },
+    { date: 'APR, TUE 15', time: '7:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'New Chandigarh' },
+    { date: 'APR, WED 16', time: '3:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Delhi' },
+    { date: 'APR, THU 17', time: '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Mumbai' },
+    { date: 'APR, FRI 18', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Bengaluru' },
+    { date: 'APR, SAT 19', time: '3:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Ahmedabad' },
+    { date: 'APR, SAT 19', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Jaipur' },
+    { date: 'APR, SUN 20', time: '3:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'New Chandigarh' },
+    { date: 'APR, SUN 20', time : '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Mumbai' },
+    { date: 'APR, MON 21', time: '7:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Kolkata' },
+    { date: 'APR, TUE 22', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Lucknow' },
+    { date: 'APR, WED 23', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Hydarabad' },
+    { date: 'APR, THU 24', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Bengaluru' },
+    { date: 'APR, FRI 25', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Chennai' },
+    { date: 'APR, SAT 26', time: '7:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Kolkata' },
+    { date: 'APR, SUN 27', time: '3:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Mumbai' },
+    { date: 'APR, SUN 27', time: '3:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Delhi' },
+    { date: 'APR, MON 28', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Jaipur' },
+    { date: 'APR, TUE 29', time: '7:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Delhi' },
+    { date: 'APR, WED 30', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Chennai' },
+    { date: 'MAY, THU 1', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Jaipur' },
+    { date: 'MAY, FRI 2', time: '7:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Ahmedabad' },
+    { date: 'MAY, SAT 3', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Bengaluru' },
+    { date: 'MAY, SUN 4', time: '3:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'static/kkr.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Kolkata' },
+    { date: 'MAY, SUN 4', time: '7:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Dharamsala' },
+    { date: 'MAY, MON 5', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Hydarabad' },
+    { date: 'MAY, TUE 6', time: '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'mi.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Mumbai' },
+    { date: 'MAY, WED 7', time: '7:30 pm IST', team1: 'Kolkata Knight Riders', team1Img: 'kkr.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Kolkata' },
+    { date: 'MAY, THU 8', time: '7:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Dharamsala' },
+    { date: 'MAY, FRI 9', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Royal Challengers Bengaluru', team2Img: 'static/rcb.jpg', venue: 'Lucknow' },
+    { date: 'MAY, SAT 10', time: '7:30 pm IST', team1: 'Sunrisers Hyderabad', team1Img: 'static/srh.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Hydarabad' },
+    { date: 'MAY, SUN 11', time: '3:30 pm IST', team1: 'Punjab Kings', team1Img: 'static/pk.jpg', team2: 'Mumbai Indians', team2Img: 'static/mi.jpg', venue: 'Dharamsala' },
+    { date: 'MAY, SUN 11', time: '7:30 pm IST', team1: 'Delhi Capitals', team1Img: 'static/dc.jpg', team2: 'Gujarat Titans', team2Img: 'static/gt.jpg', venue: 'Delhi' },
+    { date: 'MAY, MON 12', time: '7:30 pm IST', team1: 'Chennai Super Kings', team1Img: 'static/csk.jpg', team2: 'Rajasthan Royals', team2Img: 'static/rr.jpg', venue: 'Chennai' },
+    { date: 'MAY, TUE 13', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Bengaluru' },
+    { date: 'MAY, WED 14', time: '7:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Lucknow Super Giants', team2Img: 'static/lsg.jpg', venue: 'Ahmedabad' },
+    { date: 'MAY, THU 15', time: '7:30 pm IST', team1: 'Mumbai Indians', team1Img: 'static/mi.jpg', team2: 'Delhi Capitals', team2Img: 'static/dc.jpg', venue: 'Mumbai' },
+    { date: 'MAY, FRI 16', time: '7:30 pm IST', team1: 'Rajasthan Royals', team1Img: 'static/rr.jpg', team2: 'Punjab Kings', team2Img: 'static/pk.jpg', venue: 'Jaipur' },
+    { date: 'MAY, SAT 17', time: '7:30 pm IST', team1: 'Royal Challengers Bengaluru', team1Img: 'static/rcb.jpg', team2: 'Kolkata Knight Riders', team2Img: 'static/kkr.jpg', venue: 'Bengaluru' },
+    { date: 'MAY, SUN 18', time: '3:30 pm IST', team1: 'Gujarat Titans', team1Img: 'static/gt.jpg', team2: 'Chennai Super Kings', team2Img: 'static/csk.jpg', venue: 'Ahmedabad' },
+    { date: 'MAY, SUN 18', time: '7:30 pm IST', team1: 'Lucknow Super Giants', team1Img: 'static/lsg.jpg', team2: 'Sunrisers Hyderabad', team2Img: 'static/srh.jpg', venue: 'Lucknow' },
+    { date: 'MAY, TUE 20', time: '7:30 pm IST', team1: 'TBD', team1Img: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Sunrisers_Hyderabad_logo.png', team2: 'TBD', team2Img: 'https://upload.wikimedia.org/wikipedia/en/3/3e/Gujarat_Titans_logo.png', venue: 'Hydarabad' },
+    { date: 'MAY, WED 21', time: '3:30 pm IST', team1: 'TBD', team1Img: 'https://upload.wikimedia.org/wikipedia/en/0/0e/Rajasthan_Royals_logo.png', team2: 'TBD', team2Img: 'https://upload.wikimedia.org/wikipedia/en/5/5e/Lucknow_Super_Giants_logo.png', venue: 'Hydarabad' },
+    { date: 'MAY, FRI 23', time: '7:30 pm IST', team1: 'TBD', team1Img: 'https://upload.wikimedia.org/wikipedia/en/4/4e/Delhi_Capitals_logo.png', team2: 'TBD', team2Img: 'https://upload.wikimedia.org/wikipedia/en/1/1e/Kolkata_Knight_Riders_logo.png', venue: 'Kolkata' },
+    { date: 'MAY, SUN 25', time: '7:30 pm IST', team1: 'TBD', team1Img: 'https://upload.wikimedia.org/wikipedia/en/f/f9/Chennai_Super_Kings_logo.png', team2: 'TBD', team2Img: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Mumbai_Indians_logo.png', venue: 'Kolkata' },
+
+        ];
+
+        function displayMatches() {
+            const matchContainer = document.getElementById('matches-list');
+            matchContainer.innerHTML = '';
+            
+            matches.forEach(match => {
+                const matchElement = document.createElement('div');
+                matchElement.classList.add('match');
+                matchElement.innerHTML = `
+                    <div>
+                        <div class="match-date">${match.date} - ${match.time}</div> 
+                        
+                        <div class="match-teams">
+                            <img src="${match.team1Img}" alt="${match.team1}" /> 
+                            <span>${match.team1}</span> vs 
+                            <img src="${match.team2Img}" alt="${match.team2}" />
+                            <span>${match.team2}</span>
+                        </div>
+                        <div class="match-venue">Venue: ${match.venue}</div>
+                    </div>
+                    <div>
+                        <button class="book-now">Book Now</button>
+                        
+
+
+                    </div>
+                `;
+                const bookNowButton = matchElement.querySelector('.book-now');
+bookNowButton.addEventListener('click', function() {
+    document.getElementById("matches-section").style.display = "none";
+    document.getElementById("booking-container").classList.remove("hidden");
+    
+    // Fill in the booking form with match details
+    document.getElementById("booking-match-date").value = match.date;
+    document.getElementById("booking-match-time").value = match.time;
+    document.getElementById("booking-match-teams").value = `${match.team1} vs ${match.team2}`;
+    document.getElementById("booking-match-venue").value = match.venue;
+});
+                matchContainer.appendChild(matchElement);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("show-register").addEventListener("click", function() {
+                document.getElementById("login-container").classList.add("hidden");
+                document.getElementById("register-container").classList.remove("hidden");
+            });
+
+            document.getElementById("show-login").addEventListener("click", function() {
+                document.getElementById("register-container").classList.add("hidden");
+                document.getElementById("login-container").classList.remove("hidden");
+            });
+
+            let users = JSON.parse(localStorage.getItem('users')) || {};
+
+            document.getElementById("register-form").addEventListener("submit", function(event) {
+                event.preventDefault();
+                let name = document.getElementById("register-name").value;
+                let password = document.getElementById("register-password").value;
+                users[name] = password;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("Registration successful! Please login.");
+                document.getElementById("register-container").classList.add("hidden");
+                document.getElementById("login-container").classList.remove("hidden");
+            });
+
+            document.getElementById("login-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    let name = document.getElementById("login-name").value;
+    let password = document.getElementById("login-password").value;
+    if (users[name] && users[name] === password) {
+        alert("Login successful!");
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("register-container").style.display = "none";
+        document.getElementById("navbar").style.display = "flex";
+
+        // ✅ Ensure the background remains after login
+        document.body.style.background = 'url("static/back1.jpg") no-repeat center center fixed';
+        document.body.style.backgroundSize = "cover";
+
+
+    } else {
+        document.getElementById("login-message").innerText = "Invalid username or password";
+    }
+
+    document.getElementById("booking-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const name = document.getElementById("booking-name").value;
+    const matchInfo = document.getElementById("booking-match-info").value;
+    
+    // Here you can handle the booking logic (e.g., save to a database, etc.)
+    document.getElementById("booking-message").innerText = `Booking confirmed for ${name} for the match: ${matchInfo}`;
+    
+    // Optionally, clear the form
+    document.getElementById("booking-form").reset();
+});
+
+document.getElementById("back-to-matches").addEventListener("click", function() {
+    document.getElementById("booking-container").classList.add("hidden");
+    document.getElementById("matches-section").style.display = "flex";
+});
+
+});
+
+
+            document.getElementById("show-matches").addEventListener("click", function() {
+                document.getElementById("matches-section").style.display = "flex";
+                displayMatches(); // Call to display matches when the section is shown
+            });
+        });
+    </script>
+
+
+<script>
+    let selectedPrice = 0;
+
+    // Event listener for seat selection buttons
+    document.querySelectorAll('.seat-button').forEach((button) => {
+        button.addEventListener("click", function() {
+            selectedPrice = parseInt(this.value);
+            document.getElementById("seat-price").innerText = `Pay ₹${selectedPrice}`;
+            document.getElementById("qr-code-section").style.display = "block";
+            document.getElementById("confirm-booking").style.display = "block";
+        });
+    });
+
+    // Confirm booking and generate ticket
+    document.getElementById("confirm-booking").addEventListener("click", function() {
+        const name = document.getElementById("booking-name").value;
+        const matchDate = document.getElementById("booking-match-date").value;
+        const matchTime = document.getElementById("booking-match-time").value;
+        const matchTeams = document.getElementById("booking-match-teams").value;
+        const matchVenue = document.getElementById("booking-match-venue").value;
+
+        // Send booking data to the server
+        fetch('/book_ticket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                match_date: matchDate,
+                match_time: matchTime,
+                match_teams: matchTeams,
+                match_venue: matchVenue,
+                seat_price: selectedPrice
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message); // Show success message
+            // Show ticket details in table format
+            document.getElementById("ticket-name").innerText = name;
+            document.getElementById("ticket-match").innerText = `${matchDate} - ${matchTime}: ${matchTeams}`;
+            document.getElementById("ticket-venue").innerText = matchVenue;
+            document.getElementById("ticket-price").innerText = `₹${selectedPrice}`;
+            document.getElementById("ticket-display").style.display = "block";
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+</body>
+</html>
